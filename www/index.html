@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+     
+    <script>
+     $(function () {
+            $("input").on("click", function () {
+                var ken = $(this).attr("ken");
+                console.log(ken);
+
+                $.ajax({
+                    url: 'http://javascriptajax.azurewebsites.net/get_tenki_json.php?city=' + ken,
+                    type: 'GET',
+                    dataType: 'json',
+
+
+                }).done(function (data) {
+                    console.log(data);
+                    // 天気の概況
+                    $("#kekka").html("");
+                    $("#tenki").html("");
+                    $("#url").html("");
+                    
+                    $("#kekka").append(data.description.text);
+                   
+                    console.log(Object.keys(data.forecasts).length);
+                    var json_obj_length = Object.keys(data.forecasts).length;
+                    
+
+                    // 3日分のデータを表示する
+                    var htmltenki="";
+                    htmltenki += '<tr>';
+                    for(var i = 0; i < json_obj_length; i++){
+                        htmltenki += '<td>' +data.forecasts[i].dateLabel + '<br>';
+                        htmltenki += '<img src="'+ data.forecasts[i].image.url+'">'+'</td>';
+                    }
+                    htmltenki += '</tr>';
+                    $("#tenki").append(htmltenki);
+                   
+                   var json_obj_length = Object.keys(data.pinpointLocations).length;
+                    var htmlurl="";
+                    // htmlurl += '<tr>';
+                    for(var i = 0; i <json_obj_length; i++){
+                        htmlurl += '<tr><td>'+'<a href="'+data.pinpointLocations[i].link+'">' + data.pinpointLocations[i].name+'</a></td></tr>';
+                    }
+                     // htmlurl += '</tr>';
+                    $("#url").append(htmlurl);
+                    // //ajaxの通信に成功した場合
+                    // //受信データは引数dataで記述
+                }).fail(function (data) {
+                    //ajaxの通信に失敗した場合
+                    //alert("受信失敗");
+
+                });
+            });
+        })
+    
+    
+    </script>
+</head>
+<body>
+        <div>
+            天気予報
+        </div>
+         <input type="button" id="kagawa" value="香川県" ken="370000">
+         <input type="button" id="tokushima" value="徳島県" ken="360010"><br>
+         <input type="button" id="ehime" value="愛媛県" ken="380010">
+         <input type="button" id="kouchi" value="高知県" ken="390010">
+         <h2>ここに天気予報を表示します</h2>
+         <div id="kekka"></div>
+         <table>
+        <tr>
+            <td>
+                <div id="tenki"></div>
+            </td>
+        </tr>
+        <table>
+        <tr>
+            <td>
+                <div id="url">
+            </td>
+        </tr>
+    </table>
+    </table>
+         
+</body>
+</html>
